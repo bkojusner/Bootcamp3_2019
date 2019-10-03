@@ -56,10 +56,12 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
   var listing = req.listing;
 
-  let listingProperties = req.body;
+  var listingProperties = req.body;
 
   /*save the coordinates (located in req.results if there is an address property) */
   if(req.results) {
+  	listingProperties.name,
+  	listingProperties.code,
   	listingProperties.coordinates = {
   		latitude: req.results.lat,
   		longitude: req.results.lng
