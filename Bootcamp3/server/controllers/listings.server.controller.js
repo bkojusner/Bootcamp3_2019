@@ -1,4 +1,3 @@
-
 /* Dependencies */
 var mongoose = require('mongoose'), 
     Listing = require('../models/listings.server.model.js'),
@@ -57,25 +56,44 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
   var listing = req.listing;
 
-  /* Replace the listings's properties with the new properties found in req.body */
- 
-  /*save the coordinates (located in req.results if there is an address property) */
- 
-  /* Save the listing */
+  let listingProperties = req.body;
 
+  /*save the coordinates (located in req.results if there is an address property) */
+  if(req.results) {
+  	listingProperties.coordinates = {
+  		latitude: req.results.lat,
+  		longitude: req.results.lng
+  	};
+  }
+
+  /* Replace the listings's properties with the new properties found in req.body */
+  Listing.findOneAndUpdate( { _id: listing._id }, listingProperties, (err, document) => {
+    if(err) res.status(400).send(err);
+    Listing.findById(listing._id, (err, document) => {
+      if(err) res.status(400).send(err);
+      res.status(200).send(document);
+    });    
+  }); 
 };
 
 /* Delete a listing */
 exports.delete = function(req, res) {
   var listing = req.listing;
 
-  /* Add your code to remove the listins */
-
+  /* Add your code to remove the listings */
+  Listing.findByIdAndRemove(listing._id, function(err, lis) {
+  	if (err) res.status(400).send(err)
+  	else res.json(lis);
+  });
 };
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
   /* Add your code */
+  Listing.find((err, documents) => {
+    if(err) res.status(400).send(err);
+    res.status(200).send(documents);
+  });
 };
 
 /* 
